@@ -1,12 +1,10 @@
 package error
 
 import (
-	"context"
 	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 type Diagnostic interface {
@@ -73,7 +71,7 @@ func (d Diagnostics) HasError() bool {
 
 }
 
-func (d Diagnostics) ToGrpcError(ctx context.Context, code codes.Code, requestIdHeader string) error {
+func (d Diagnostics) ToGrpcError(code codes.Code, requestIdHeader string) error {
 
 	errors := []string{}
 
@@ -81,13 +79,6 @@ func (d Diagnostics) ToGrpcError(ctx context.Context, code codes.Code, requestId
 		if diagnostic.IsError() {
 			errors = append(errors, diagnostic.String())
 		}
-	}
-
-	md, ok := metadata.FromOutgoingContext(ctx)
-	if ok {
-
-		vals, ok := md[requestIdHeader]
-
 	}
 
 	if len(errors) == 0 {
